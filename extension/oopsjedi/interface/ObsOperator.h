@@ -1,0 +1,175 @@
+/*
+ * (C) Copyright 2009-2016 ECMWF.
+ *
+ * This software is licensed under the terms of the Apache Licence Version 2.0
+ * which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
+ * In applying this licence, ECMWF does not waive the privileges and immunities
+ * granted to it by virtue of its status as an intergovernmental organisation nor
+ * does it submit to any jurisdiction.
+ */
+
+#ifndef OOPSJEDI_INTERFACE_OBSOPERATOR_H_
+#define OOPSJEDI_INTERFACE_OBSOPERATOR_H_
+
+#include <memory>
+#include <string>
+
+#include <boost/noncopyable.hpp>
+
+#include "oopsjedi/base/Locations.h"
+#include "oopsjedi/base/ObsVector.h"
+#include "oopsjedi/interface/GeoVaLs.h"
+#include "oopsjedi/interface/ObsAuxControl.h"
+#include "oopsjedi/interface/ObsDiagnostics.h"
+#include "oopsjedi/interface/ObsSpace.h"
+#include "oopsjedi/util/Logger.h"
+#include "oopsjedi/util/ObjectCounter.h"
+#include "oopsjedi/util/Printable.h"
+#include "oopsjedi/util/Timer.h"
+
+namespace oopsjedi {
+
+class Variables;
+
+// -----------------------------------------------------------------------------
+/// \brief MODEL-agnostic part of nonlinear observation (forward) operator.
+/// The full nonlinear observation operator from State x to ObsVector is:
+/// ObsOperator ( GetValues (State) )
+/// ObsOperator uses GeoVaLs (result of GetValues(State) - model State at
+/// observations locations) as input data to compute forward operator.
+///
+/// Note: each implementation should typedef `Parameters_` to the name of a subclass of
+/// oopsjedi::Parameters holding its configuration settings and provide a constructor with the
+/// following signature:
+///
+///     ObsOperator(const OBS::ObsSpace &, const Parameters_ &);
+template <typename OBS>
+class ObsOperator : public utiljedi::Printable,
+                    private boost::noncopyable,
+                    private utiljedi::ObjectCounter<ObsOperator<OBS> > {
+  typedef typename OBS::ObsOperator  ObsOperator_;
+  typedef GeoVaLs<OBS>               GeoVaLs_;
+  typedef Locations<OBS>             Locations_;
+  typedef ObsDiagnostics<OBS>        ObsDiags_;
+  typedef ObsAuxControl<OBS>         ObsAuxControl_;
+  typedef ObsVector<OBS>             ObsVector_;
+  typedef ObsSpace<OBS>              ObsSpace_;
+
+ public:
+  /// A subclass of oopsjedi::Parameters holding the configuration settings of the operator.
+  typedef typename ObsOperator_::Parameters_ Parameters_;
+
+  static const std::string classname() {return "oopsjedi::ObsOperator";}
+
+  /// Set up observation operator for the \p obsspace observations, with
+  /// parameters defined in \p parameters
+  ObsOperator(const ObsSpace_ & obsspace, const Parameters_ & parameters);
+  ~ObsOperator();
+
+  /// Compute forward operator \p y = ObsOperator (\p x).
+  /// \param[in]  x        obs operator input, State interpolated along paths sampling the
+  ///                      observation locations.
+  /// \param[out] y        result of computing obs operator on \p x.
+  /// \param[in]  obsaux   additional input for computing H(x), used in the minimization
+  ///                      in Variational DA, e.g. bias correction coefficients or obs operator
+  ///                      parameters.
+  /// \param[out] obsbias  bias correction of the departure between \p y and the observed values;
+  ///                      when \p obsbias is non-zero, it is added to \p y within the obs
+  ///                      operator
+  /// \param[out] obsdiags   additional diagnostics output from computing obs operator that is not
+  ///                        used in the assimilation, and can be used by ObsFilters.
+  void simulateObs(const GeoVaLs_ & x_int, ObsVector_ & y, const ObsAuxControl_ & obsaux,
+                   ObsVector_ & obsbias, ObsDiags_ & obsdiags) const;
+
+  /// Variables required from the model State to compute obs operator. These variables
+  /// will be provided in GeoVaLs passed to simulateObs.
+  const Variables & requiredVars() const;
+
+  /// Return an object holding one or more collections of paths sampling the observation locations
+  /// and indicating along which of these sets of paths individual model variables should be
+  /// interpolated.
+  ///
+  /// Operators simulating pointwise observations will normally ask for all variables to be
+  /// interpolated along the same set of vertical paths, each at the nominal latitude
+  /// and longitude of a single observation. Operators simulating spatially extended observations
+  /// can ask for some or all variables to be interpolated along multiple paths sampling each
+  /// observation location, for instance to then compute a weighted average.
+  Locations_ locations() const;
+
+ private:
+  /// Print, used for logging
+  void print(std::ostream &) const;
+
+  const std::string name_;
+  /// Pointer to the implementation of ObsOperator
+  std::unique_ptr<ObsOperator_> oper_;
+};
+
+// -----------------------------------------------------------------------------
+
+template <typename OBS>
+ObsOperator<OBS>::ObsOperator(const ObsSpace_ & os, const Parameters_ & parameters)
+  : name_("oopsjedi::ObsOperator::"+os.obsname()), oper_()
+{
+  Log::trace() << "ObsOperator<OBS>::ObsOperator starting" << std::endl;
+  utiljedi::Timer timer(name_, "ObsOperator");
+  oper_.reset(new ObsOperator_(os.obsspace(), parameters));
+  Log::trace() << "ObsOperator<OBS>::ObsOperator done" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename OBS>
+ObsOperator<OBS>::~ObsOperator() {
+  Log::trace() << "ObsOperator<OBS>::~ObsOperator starting" << std::endl;
+  utiljedi::Timer timer(name_, "~ObsOperator");
+  oper_.reset();
+  Log::trace() << "ObsOperator<OBS>::~ObsOperator done" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename OBS>
+void ObsOperator<OBS>::simulateObs(const GeoVaLs_ & gvals, ObsVector_ & yy,
+                                     const ObsAuxControl_ & aux, ObsVector_ & ybias,
+                                     ObsDiags_ & ydiag) const {
+  Log::trace() << "ObsOperator<OBS>::simulateObs starting" << std::endl;
+  utiljedi::Timer timer(name_, "simulateObs");
+  oper_->simulateObs(gvals.geovals(), yy.obsvector(), aux.obsauxcontrol(), ybias.obsvector(),
+                     ydiag.obsdiagnostics());
+  Log::trace() << "ObsOperator<OBS>::simulateObs done" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename OBS>
+const Variables & ObsOperator<OBS>::requiredVars() const {
+  Log::trace() << "ObsOperator<OBS>::requiredVars starting" << std::endl;
+  utiljedi::Timer timer(name_, "requiredVars");
+  return oper_->requiredVars();
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename OBS>
+Locations<OBS> ObsOperator<OBS>::locations() const {
+  Log::trace() << "ObsOperator<OBS>::locations starting" << std::endl;
+  utiljedi::Timer timer(name_, "locations");
+  return oper_->locations();
+}
+
+// -----------------------------------------------------------------------------
+
+template<typename OBS>
+void ObsOperator<OBS>::print(std::ostream & os) const {
+  Log::trace() << "ObsOperator<OBS>::print starting" << std::endl;
+  utiljedi::Timer timer(name_, "print");
+  os << *oper_;
+  Log::trace() << "ObsOperator<OBS>::print done" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+
+}  // namespace oopsjedi
+
+#endif  // OOPSJEDI_INTERFACE_OBSOPERATOR_H_

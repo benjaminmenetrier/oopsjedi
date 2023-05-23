@@ -6,6 +6,15 @@ if(NOT jedicmake_FOUND)
     find_dependency(jedicmake REQUIRED)
 endif()
 
+if((@LAPACK_FOUND@ AND NOT LAPACK_FOUND) OR (@MKL_FOUND@ AND NOT MKL_FOUND))
+    if( @MKL_FOUND@ )
+        find_dependency( MKL REQUIRED )
+        set( LAPACK_LIBRARIES ${MKL_LIBRARIES} )
+    else()
+        find_dependency( LAPACK REQUIRED )
+    endif()
+endif()
+
 if(NOT Eigen3_FOUND)
     find_dependency( Eigen3 REQUIRED NO_MODULE HINTS @EIGEN3_ROOT_DIR@ )
 endif()
@@ -16,6 +25,10 @@ endif()
 
 if(NOT (MPI_CXX_FOUND AND MPI_Fortran_FOUND))
     find_dependency( MPI REQUIRED COMPONENTS CXX Fortran )
+endif()
+
+if(NOT NetCDF_Fortran_FOUND)
+    find_dependency( NetCDF REQUIRED COMPONENTS Fortran )
 endif()
 
 if(NOT Boost_FOUND)
@@ -36,6 +49,17 @@ if(NOT atlas_FOUND)
     else()
         find_dependency( atlas REQUIRED )
     endif()
+endif()
+
+if(@ENABLE_GPTL@ AND NOT GPTL_FOUND)
+    find_dependency( GPTL REQUIRED )
+endif()
+
+if(@nlohmann_json_FOUND@ AND NOT nlohmann_json_FOUND)
+    find_dependency(nlohmann_json QUIET)
+endif()
+if (@nlohmann_json_schema_validator_FOUND@ AND NOT nlohmann_json_schema_validator_FOUND)
+    find_dependency(nlohmann_json_schema_validator QUIET)
 endif()
 
 #Export Fortran compiler version for checking module compatibility

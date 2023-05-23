@@ -1,11 +1,16 @@
 #!/usr/bin/env bash
-
+exit
 # oops-jedi repo
 oopsjedi=/home/benjaminm/code/jedi-bundle/oops
 
 # Copy cmake
 if test ! -d $1/cmake; then
   cp -fr ${oopsjedi}/cmake $1
+fi
+
+# Copy cmake
+if test ! -d $1/tools; then
+  cp -fr ${oopsjedi}/tools $1
 fi
 
 # Copy src and rename src_tmp/oops into src_tmp/oopsjedi
@@ -15,6 +20,8 @@ mv $1/src_tmp/oops $1/src_tmp/oopsjedi
 
 # Update src_tmp/CMakeLists.txt
 sed -i -e s:"oops/":"oopsjedi/":g $1/src_tmp/CMakeLists.txt
+sed -i -e s:"/oops":"/oopsjedi":g $1/src_tmp/CMakeLists.txt
+sed -i -e s:"oopsjedijedi":"oopsjedi/":g $1/src_tmp/CMakeLists.txt
 
 # Copy src_tmp into src
 if test ! -d $1/src; then 
@@ -41,7 +48,7 @@ for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.F90`; do
 done
 
 # Copy extension files
-for file in `find $1/extension -name *.h -o -name *.cc -o -name *.F90`; do
+for file in `find $1/extension -name *.h -o -name *.cc -o -name *.F90 -name *.txt`; do
   cp -f ${file} ${file/extension/src_tmp}
 done
 

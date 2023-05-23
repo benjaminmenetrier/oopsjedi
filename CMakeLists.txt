@@ -1,6 +1,6 @@
 # (C) Copyright 2009-2016 ECMWF.
 # (C) Copyright 2022- UCAR.
-# (C) Copyright 2023- MET Norway
+# (C) Copyright 2023- Norwegian Meteorological Institute
 #
 # This software is licensed under the terms of the Apache Licence Version 2.0
 # which can be obtained at http://www.apache.org/licenses/LICENSE-2.0.
@@ -94,8 +94,10 @@ install(
 
 ## Sources
 add_subdirectory( src )
+add_subdirectory( tools )
 
 ## Package Config
+
 ecbuild_install_project( NAME ${PROJECT_NAME} )
 
 #Export Targets

@@ -78,9 +78,9 @@ if(NOT @PROJECT_NAME@_BINARY_DIR)
   endif()
 endif()
 
-### JSON schema file generation function "oopsjedi_output_json_schema"
-if(EXISTS "${@PROJECT_NAME@_CMAKE_DIR}/oopsjedi_output_json_schema.cmake")
-  include("${@PROJECT_NAME@_CMAKE_DIR}/oopsjedi_output_json_schema.cmake")
+### JSON schema file generation function "oops_output_json_schema"
+if(EXISTS "${@PROJECT_NAME@_CMAKE_DIR}/oops_output_json_schema.cmake")
+  include("${@PROJECT_NAME@_CMAKE_DIR}/oops_output_json_schema.cmake")
 endif()
 
 ### publish this file as imported
