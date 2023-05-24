@@ -72,7 +72,7 @@ template <typename MODEL>
 class Increment : public oopsjedi::GeneralizedDepartures,
                   public utiljedi::Serializable,
                   private utiljedi::ObjectCounter<Increment<MODEL> > {
-  typedef typename MODEL::Increment  Increment_;
+  typedef oops::Increment<MODEL>     Increment_;
   typedef oopsjedi::Geometry<MODEL>  Geometry_;
   typedef GeometryIterator<MODEL>    GeometryIterator_;
   typedef oopsjedi::State<MODEL>     State_;
@@ -101,6 +101,8 @@ class Increment : public oopsjedi::GeneralizedDepartures,
   /// Creates Increment with the same geometry and variables as \p other.
   /// Copies \p other if \p copy is true, otherwise creates zero increment
   Increment(const Increment &, const bool copy = true);
+  /// Constructor from oops::Increment<MODEL>
+  Increment(const Increment_ &);
 
  public:
   /// Destructor (defined explicitly for timing and tracing)
@@ -213,12 +215,11 @@ Increment<MODEL>::Increment(const Geometry_ & resol, const Variables & vars,
 {
   Log::trace() << "Increment<MODEL>::Increment starting" << std::endl;
   utiljedi::Timer timer(classname(), "Increment");
- 
   eckit::LocalConfiguration varConf;
   varConf.set("variables", vars.variables());
   const oops::Variables<MODEL> oopsVars(varConf);
   const util::DateTime oopsTime(time.toString());
-  increment_.reset(new Increment_(resol.geometry(), oopsVars.variables(), oopsTime));
+  increment_.reset(new Increment_(resol.geometry(), oopsVars, oopsTime));
 //  this->setObjectSize(increment_->serialSize()*sizeof(double));
   Log::trace() << "Increment<MODEL>::Increment done" << std::endl;
 }
@@ -247,6 +248,15 @@ Increment<MODEL>::Increment(const Increment & other, const bool copy)
   increment_.reset(new Increment_(*other.increment_, copy));
 //  this->setObjectSize(increment_->serialSize()*sizeof(double));
   Log::trace() << "Increment<MODEL>::Increment copy done" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename MODEL>
+Increment<MODEL>::Increment(const Increment_ & increment)
+  : increment_(std::make_unique<Increment_>(increment))
+{
+  Log::trace() << "Increment<MODEL>::Increment copy from oops::Increment<MODEL> done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -455,7 +465,7 @@ template<typename MODEL>
 void Increment<MODEL>::toFieldSet(atlas::FieldSet & fset) const {
   Log::trace() << "Increment<MODEL>::toFieldSet starting" << std::endl;
   utiljedi::Timer timer(classname(), "toFieldSet");
-  // TODO  increment_->toFieldSet(fset);
+  increment_->toFieldSet(fset);
   Log::trace() << "Increment<MODEL>::toFieldSet done" << std::endl;
 }
 
@@ -465,7 +475,7 @@ template<typename MODEL>
 void Increment<MODEL>::toFieldSetAD(const atlas::FieldSet & fset) {
   Log::trace() << "Increment<MODEL>::toFieldSetAD starting" << std::endl;
   utiljedi::Timer timer(classname(), "toFieldSetAD");
-  // TODO  increment_->toFieldSetAD(fset);
+  increment_->toFieldSetAD(fset);
   Log::trace() << "Increment<MODEL>::toFieldSetAD done" << std::endl;
 }
 
@@ -475,7 +485,7 @@ template<typename MODEL>
 void Increment<MODEL>::fromFieldSet(const atlas::FieldSet & fset) {
   Log::trace() << "Increment<MODEL>::fromFieldSet starting" << std::endl;
   utiljedi::Timer timer(classname(), "fromFieldSet");
-  // TODO  increment_->fromFieldSet(fset);
+  increment_->fromFieldSet(fset);
   fset_.clear();
   Log::trace() << "Increment<MODEL>::fromFieldSet done" << std::endl;
 }

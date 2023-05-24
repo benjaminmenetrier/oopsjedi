@@ -1,21 +1,27 @@
 #!/usr/bin/env bash
-exit
-# oops-jedi repo
-oopsjedi=/home/benjaminm/code/jedi-bundle/oops
+
+# Update or clone OOPS-JEDI repo
+if test -d $1/oops-jcsda; then
+  cd $1/oops-jcsda
+  git checkout develop
+  git pull
+else
+  git clone https://github.com/jcsda/oops $1/oops-jcsda
+fi
 
 # Copy cmake
 if test ! -d $1/cmake; then
-  cp -fr ${oopsjedi}/cmake $1
+  cp -fr $1/oops-jcsda/cmake $1
 fi
 
 # Copy cmake
 if test ! -d $1/tools; then
-  cp -fr ${oopsjedi}/tools $1
+  cp -fr $1/oops-jcsda/tools $1
 fi
 
 # Copy src and rename src_tmp/oops into src_tmp/oopsjedi
 rm -fr $1/src_tmp
-cp -fr ${oopsjedi}/src $1/src_tmp
+cp -fr $1/oops-jcsda/src $1/src_tmp
 mv $1/src_tmp/oops $1/src_tmp/oopsjedi
 
 # Update src_tmp/CMakeLists.txt
@@ -47,9 +53,9 @@ for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.F90`; do
            ${file}
 done
 
-# Copy extension files
+# Link extension files
 for file in `find $1/extension -name *.h -o -name *.cc -o -name *.F90 -name *.txt`; do
-  cp -f ${file} ${file/extension/src_tmp}
+  ln -sf ${file} ${file/extension/src_tmp}
 done
 
 # Copy modified files
@@ -60,5 +66,5 @@ for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.F90`; do
   fi
 done
 
-# Remove src_tmp
+# Cleaning
 rm -fr $1/src_tmp

@@ -69,8 +69,8 @@ template <typename MODEL>
 class State : public utiljedi::Printable,
               public utiljedi::Serializable,
               private utiljedi::ObjectCounter<State<MODEL> > {
-  typedef typename MODEL::State      State_;
-  typedef oopsjedi::Geometry<MODEL>  Geometry_;
+  typedef oops::State<MODEL>         State_;
+  typedef Geometry<MODEL>            Geometry_;
 
  public:
   /// Set to State_::Parameters_ if State_ provides a type called Parameters_ and to
@@ -96,7 +96,7 @@ class State : public utiljedi::Printable,
   State(const Geometry_ & resol, const State & other);
   /// Copy constructor
   State(const State &);
-  /// Constructor from MODEL::State
+  /// Constructor from oops::State<MODEL>
   State(const State_ &);
   /// Destructor (defined explicitly for timing and tracing)
   ~State();
@@ -165,8 +165,12 @@ State<MODEL>::State(const Geometry_ & resol, const Variables & vars,
   utiljedi::Timer timer(classname(), "State");
   // TODO: how to use vars in model?
   eckit::LocalConfiguration modelConf;
-  oops::Model<MODEL> model(resol, modelConf);
-  state_.reset(new State_(resol.geometry(), model.model(), time));
+  oops::Model<MODEL> model(resol.geometry(), modelConf);
+  eckit::LocalConfiguration conf;
+  conf.set("variables", vars.variables());
+  conf.set("date", time.toString());
+  state_.reset(new State_(resol.geometry(), model, conf));
+  state_->validTime() = util::DateTime(time.toString());
 //  this->setObjectSize(state_->serialSize()*sizeof(double));
   Log::trace() << "State<MODEL>::State done" << std::endl;
 }
@@ -180,11 +184,11 @@ State<MODEL>::State(const Geometry_ & resol,
   Log::trace() << "State<MODEL>::State read starting" << std::endl;
   utiljedi::Timer timer(classname(), "State");
   eckit::LocalConfiguration modelConf;
-  oops::Model<MODEL> model(resol, modelConf);
+  oops::Model<MODEL> model(resol.geometry(), modelConf);
   state_.reset(new State_(
                  resol.geometry(),
-                 model.model(),
-                 parametersOrConfiguration<HasParameters_<State_>::value>(params)));
+                 model,
+                 params.toConfiguration()));
 //  this->setObjectSize(state_->serialSize()*sizeof(double));
   Log::trace() << "State<MODEL>::State read done" << std::endl;
 }
@@ -220,7 +224,7 @@ template <typename MODEL>
 State<MODEL>::State(const State_ & state)
   : state_(std::make_unique<State_>(state))
 {
-  Log::trace() << "State<MODEL>::State copy done" << std::endl;
+  Log::trace() << "State<MODEL>::State copy from oops::State<MODEL> done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -335,7 +339,7 @@ template<typename MODEL>
 void State<MODEL>::toFieldSet(atlas::FieldSet & fset) const {
   Log::trace() << "State<MODEL>::toFieldSet starting" << std::endl;
   utiljedi::Timer timer(classname(), "toFieldSet");
-//  state_->toFieldSet(fset);
+  state_->toFieldSet(fset);
   Log::trace() << "State<MODEL>::toFieldSet done" << std::endl;
 }
 
@@ -346,7 +350,7 @@ template<typename MODEL>
 void State<MODEL>::fromFieldSet(const atlas::FieldSet & fset) {
   Log::trace() << "State<MODEL>::fromFieldSet starting" << std::endl;
   utiljedi::Timer timer(classname(), "fromFieldSet");
-//  state_->fromFieldSet(fset);
+  state_->fromFieldSet(fset);
   Log::trace() << "State<MODEL>::fromFieldSet done" << std::endl;
 }
 
@@ -378,7 +382,7 @@ void State<MODEL>::accumul(const double & zz, const State & xx) {
   Log::trace() << "State<MODEL>::accumul starting" << std::endl;
   utiljedi::Timer timer(classname(), "accumul");
   fset_.clear();
-  state_->accumul(zz, *xx.state_);
+  state_->accumul(zz, xx.state());
   Log::trace() << "State<MODEL>::accumul done" << std::endl;
 }
 

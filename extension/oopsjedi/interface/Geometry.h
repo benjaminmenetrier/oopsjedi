@@ -61,7 +61,7 @@ namespace interface {
 template <typename MODEL>
 class Geometry : public utiljedi::Printable,
                  private utiljedi::ObjectCounter<Geometry<MODEL> > {
-  typedef typename MODEL::Geometry              Geometry_;
+  typedef oops::Geometry<MODEL>                 Geometry_;
   typedef oops::Variables<MODEL>                Variables_;
   typedef GeometryIterator<MODEL>               GeometryIterator_;
 
@@ -77,6 +77,8 @@ class Geometry : public utiljedi::Printable,
   Geometry(const eckit::Configuration &, const eckit::mpi::Comm &);
   /// Constructor from pointer to the MODEL::Geometry (used in 1DVar filter)
   explicit Geometry(std::shared_ptr<const Geometry_>);
+  /// Constructor for oops::Geometry
+  explicit Geometry(const Geometry_ &);
   /// Destructor (overridden for timer and log purposes)
   virtual ~Geometry();
 
@@ -136,9 +138,7 @@ Geometry<MODEL>::Geometry(const Parameters_ & parameters,
                           const eckit::mpi::Comm & comm): geom_() {
   Log::trace() << "Geometry<MODEL>::Geometry starting" << std::endl;
   utiljedi::Timer timer(classname(), "Geometry");
-  geom_.reset(new Geometry_(
-                parametersOrConfiguration<HasParameters_<Geometry_>::value>(parameters),
-                comm));
+  geom_.reset(new Geometry_(parameters.toConfiguration()));
   Log::trace() << "Geometry<MODEL>::Geometry done" << std::endl;
 }
 
@@ -149,6 +149,16 @@ Geometry<MODEL>::Geometry(std::shared_ptr<const Geometry_> ptr)
   : geom_(ptr)
 {
   Log::trace() << "Geometry<MODEL>::Geometry shared_ptr done" << std::endl;
+}
+
+// -----------------------------------------------------------------------------
+
+template <typename MODEL>
+Geometry<MODEL>::Geometry(const Geometry_ & geom)
+{
+  Log::trace() << "Geometry<MODEL>::Geometry starting" << std::endl;
+  geom_ = std::make_shared<const Geometry_>(geom);
+  Log::trace() << "Geometry<MODEL>::Geometry done" << std::endl;
 }
 
 // -----------------------------------------------------------------------------
@@ -191,7 +201,7 @@ std::vector<size_t> Geometry<MODEL>::variableSizes(const Variables & vars) const
   eckit::LocalConfiguration varConf;
   varConf.set("variables", vars.variables()); 
   Variables_ oopsVars(varConf);
-  std::vector<size_t> sizes = geom_->variableSizes(oopsVars);
+  std::vector<size_t> sizes = geom_->variableSizes(oopsVars.variables());
   Log::trace() << "Geometry<MODEL>::variableSizes done" << std::endl;
   return sizes;
 }
