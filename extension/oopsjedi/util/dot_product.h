@@ -8,9 +8,9 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef OOPS_UTIL_DOT_PRODUCT_H_
-#define OOPS_UTIL_DOT_PRODUCT_H_
+#ifndef OOPSJEDI_UTIL_DOT_PRODUCT_H_
+#define OOPSJEDI_UTIL_DOT_PRODUCT_H_
 
 #include "../../../../oops/src/util/dot_product.h"
 
-#endif  // OOPS_UTIL_DOT_PRODUCT_H_
+#endif  // OOPSJEDI_UTIL_DOT_PRODUCT_H_

@@ -71,7 +71,7 @@ class Geometry : public interface::Geometry<MODEL> {
   /// Constructor from pointer to the MODEL::Geometry (used in 1DVar filter)
   explicit Geometry(std::shared_ptr<const Geometry_>);
 
-  Geometry(const Geometry_ &);
+  explicit Geometry(const Geometry_ &);
 
   Geometry(const Geometry &) = delete;
   Geometry & operator=(const Geometry &) = delete;

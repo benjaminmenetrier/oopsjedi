@@ -102,7 +102,7 @@ class Increment : public oopsjedi::GeneralizedDepartures,
   /// Copies \p other if \p copy is true, otherwise creates zero increment
   Increment(const Increment &, const bool copy = true);
   /// Constructor from oops::Increment<MODEL>
-  Increment(const Increment_ &);
+  explicit Increment(const Increment_ &);
 
  public:
   /// Destructor (defined explicitly for timing and tracing)
@@ -117,7 +117,7 @@ class Increment : public oopsjedi::GeneralizedDepartures,
   void updateTime(const utiljedi::Duration & dt) {increment_->updateTime(dt);}
   /// Accessor to variables associated with this Increment
   const Variables & variables() const
-    {ABORT("not implemented in oopsjedi");return Variables();}
+    {ABORT("not implemented in oopsjedi"); return Variables();}
 
   /// Zero out this Increment
   void zero();
@@ -166,7 +166,7 @@ class Increment : public oopsjedi::GeneralizedDepartures,
   double norm() const;
   /// Root mean square of each level in an increment used by htlm
   std::vector<double> rmsByLevel(const std::string &) const
-    {ABORT("not implemented in oopsjedi");return {0};}
+    {ABORT("not implemented in oopsjedi"); return {0};}
 
   /// Get local (at \p iter local volume) increment (used in LocalEnsembleSolver)
   LocalIncrement getLocal(const GeometryIterator_ & iter) const
@@ -496,7 +496,7 @@ template<typename MODEL>
 size_t Increment<MODEL>::serialSize() const {
   Log::trace() << "Increment<MODEL>::serialSize" << std::endl;
   utiljedi::Timer timer(classname(), "serialSize");
-  // TODO  return increment_->serialSize();
+  // TODO(Benjamin M)  return increment_->serialSize();
   return 0;
 }
 
@@ -506,7 +506,7 @@ template<typename MODEL>
 void Increment<MODEL>::serialize(std::vector<double> & vect) const {
   Log::trace() << "Increment<MODEL>::serialize starting" << std::endl;
   utiljedi::Timer timer(classname(), "serialize");
-  // TODO  increment_->serialize(vect);
+  // TODO(Benjamin M)  increment_->serialize(vect);
   Log::trace() << "Increment<MODEL>::serialize done" << std::endl;
 }
 
@@ -517,7 +517,7 @@ void Increment<MODEL>::deserialize(const std::vector<double> & vect, size_t & cu
   Log::trace() << "Increment<MODEL>::Increment deserialize starting" << std::endl;
   utiljedi::Timer timer(classname(), "deserialize");
   fset_.clear();
-  // TODO  increment_->deserialize(vect, current);
+  // TODO(Benjamin M)  increment_->deserialize(vect, current);
   Log::trace() << "Increment<MODEL>::Increment deserialize done" << std::endl;
 }
 

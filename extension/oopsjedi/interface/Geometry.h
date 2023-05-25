@@ -199,7 +199,7 @@ std::vector<size_t> Geometry<MODEL>::variableSizes(const Variables & vars) const
   Log::trace() << "Geometry<MODEL>::variableSizes starting" << std::endl;
   utiljedi::Timer timer(classname(), "variableSizes");
   eckit::LocalConfiguration varConf;
-  varConf.set("variables", vars.variables()); 
+  varConf.set("variables", vars.variables());
   Variables_ oopsVars(varConf);
   std::vector<size_t> sizes = geom_->variableSizes(oopsVars.variables());
   Log::trace() << "Geometry<MODEL>::variableSizes done" << std::endl;
@@ -234,8 +234,7 @@ void Geometry<MODEL>::latlon(std::vector<double> & lats, std::vector<double> & l
                              const bool halo) const {
   Log::trace() << "Geometry<MODEL>::latlon starting" << std::endl;
   utiljedi::Timer timer(classname(), "latlon");
-//  ABORT("not implemented in oopsjedi");
-//  geom_->latlon(lats, lons, halo);
+  geom_->latlon(lats, lons, halo);
   ASSERT(lats.size() == lons.size());
   Log::trace() << "Geometry<MODEL>::latlon done" << std::endl;
 }

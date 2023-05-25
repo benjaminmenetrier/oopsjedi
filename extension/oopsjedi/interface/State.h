@@ -97,7 +97,7 @@ class State : public utiljedi::Printable,
   /// Copy constructor
   State(const State &);
   /// Constructor from oops::State<MODEL>
-  State(const State_ &);
+  explicit State(const State_ &);
   /// Destructor (defined explicitly for timing and tracing)
   ~State();
   /// Assignment operator
@@ -124,7 +124,7 @@ class State : public utiljedi::Printable,
 
   /// Accessor to variables associated with this State
   const Variables & variables() const
-    {ABORT("not implemented in oopsjedi");return Variables();}
+    {ABORT("not implemented in oopsjedi"); return Variables();}
 
   /// Zero out this State
   void zero();
@@ -163,7 +163,7 @@ State<MODEL>::State(const Geometry_ & resol, const Variables & vars,
 {
   Log::trace() << "State<MODEL>::State starting" << std::endl;
   utiljedi::Timer timer(classname(), "State");
-  // TODO: how to use vars in model?
+  // TODO(Benjamin M): how to use vars in model?
   eckit::LocalConfiguration modelConf;
   oops::Model<MODEL> model(resol.geometry(), modelConf);
   eckit::LocalConfiguration conf;
@@ -309,7 +309,8 @@ template<typename MODEL>
 size_t State<MODEL>::serialSize() const {
   Log::trace() << "State<MODEL>::serialSize" << std::endl;
   utiljedi::Timer timer(classname(), "serialSize");
-  return 0; //  state_->serialSize();
+// state_->serialSize();
+  return 0;
 }
 
 // -----------------------------------------------------------------------------

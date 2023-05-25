@@ -34,6 +34,7 @@ rm -fr $1/src_tmp
 mkdir -p $1/src_tmp
 cp -fr $1/oops-jcsda/src/oops $1/src_tmp/oopsjedi
 cp -f $1/oops-jcsda/src/CMakeLists.txt $1/src_tmp/CMakeLists.txt
+cp -f $1/oops-jcsda/src/CPPLINT.cfg $1/src_tmp/CPPLINT.cfg
 
 # Copy src_tmp/oopsjedi into src/oopsjedi to get the correct tree
 if test ! -d $1/src; then 
@@ -53,9 +54,9 @@ for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.F90`; do
 
   # Reset some unwanted changes
   sed -i -e s/"atlas::utiljedi::"/"atlas::util::"/g \
-         -e s:"OOPSJEDI_ABSTRACT":"OOPS_ABSTRACT":g \
-         -e s:"OOPSJEDI_CONCRETE":"OOPS_CONCRETE":g \
-         -e s:"OOPSJEDI_UTIL":"OOPS_UTIL":g \
+         -e s:"OOPSJEDI_ABSTRACT_PARAMETERS":"OOPS_ABSTRACT_PARAMETERS":g \
+         -e s:"OOPSJEDI_CONCRETE_PARAMETERS":"OOPS_CONCRETE_PARAMETERS":g \
+         -e s:"LIBOOPSJEDI":"LIBOOPS":g \
          ${file}
 done
 
@@ -74,7 +75,7 @@ echo -e "-- Link extension files"
 rm -f $1/diff.txt
 for file in `find $1/extension -name *.h -o -name *.cc -o -name *.F90` "$1/extension/CMakeLists.txt"; do  
   echo -e "--  + "${file}
-  diff --color ${file} ${file/extension/src_tmp} >> $1/diff.txt
+  diff ${file} ${file/extension/src_tmp} >> $1/diff.txt
   ln -sf ${file} ${file/extension/src}
 done
 echo -e "-- Diff available in: $1/diff.txt"

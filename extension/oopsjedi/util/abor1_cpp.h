@@ -8,8 +8,8 @@
  * does it submit to any jurisdiction.
  */
 
-#ifndef OOPS_UTIL_ABOR1_CPP_H_
-#define OOPS_UTIL_ABOR1_CPP_H_
+#ifndef OOPSJEDI_UTIL_ABOR1_CPP_H_
+#define OOPSJEDI_UTIL_ABOR1_CPP_H_
 
 #include <string>
 
@@ -39,4 +39,4 @@ extern "C" {
 }  // namespace utiljedi
 
 #endif
-#endif  // OOPS_UTIL_ABOR1_CPP_H_
+#endif  // OOPSJEDI_UTIL_ABOR1_CPP_H_
