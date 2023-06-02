@@ -4,7 +4,7 @@
 PWD_INIT=${PWD}
 
 # Update or clone OOPS-JEDI repo
-GIT_BRANCH=feature/use_oops_ecmwf
+GIT_BRANCH=feature/use_oops_ecmwf_with_Bapps
 echo -e "-- Clone OOPS-JEDI repository, branch ${GIT_BRANCH}"
 if test -d $1/oops-jcsda; then
   cd $1/oops-jcsda

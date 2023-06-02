@@ -156,7 +156,7 @@ Geometry<MODEL>::Geometry(std::shared_ptr<const Geometry_> ptr):
 template <typename MODEL>
 Geometry<MODEL>::Geometry(const Geometry_ & geom):
   interface::Geometry<MODEL>(geom),
-  timeComm_(&oopsjedi::mpi::world()),
+  timeComm_(&oopsjedi::mpi::myself()),
   gdata_(this->geom_->functionSpace(), this->geom_->extraFields(),
          this->levelsAreTopDown(), oopsjedi::mpi::world())
 {

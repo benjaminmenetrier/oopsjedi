@@ -213,7 +213,12 @@ eckit::Channel& LibOOPS::testChannel() const {
     testChannel_.reset(new eckit::Channel(
       new eckit::PrefixTarget("Test     :", new eckit::OStreamTarget(eckit::Log::info()))));
   } else {
-    testChannel_.reset(new eckit::Channel());
+    if ( rank_ == 0 ) {
+      testChannel_.reset(new eckit::Channel(
+        new eckit::PrefixTarget("Test     :", new eckit::OStreamTarget(eckit::Log::info()))));
+    } else {
+      testChannel_.reset(new eckit::Channel());
+    }
   }
   testChannel_->setf(std::ios::scientific);
   testChannel_->precision(std::numeric_limits<double>::digits10+1);
