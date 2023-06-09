@@ -283,7 +283,6 @@ oopsjedi/runs/ConvertIncrement.h
 oopsjedi/runs/ConvertState.h
 oopsjedi/runs/ConvertToLatLon.h
 oopsjedi/runs/DiffStates.h
-oopsjedi/runs/Dirac.h
 oopsjedi/runs/EnsembleApplication.h
 oopsjedi/runs/EnsRecenter.h
 oopsjedi/runs/EnsVariance.h
@@ -298,7 +297,6 @@ oopsjedi/runs/RTPP.h
 oopsjedi/runs/RTPS.h
 oopsjedi/runs/Run.cc
 oopsjedi/runs/Run.h
-oopsjedi/runs/StaticBInit.h
 oopsjedi/runs/SqrtOfVertLoc.h
 oopsjedi/runs/Test.h
 oopsjedi/runs/Variational.h
