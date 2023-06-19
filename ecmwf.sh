@@ -65,7 +65,7 @@ if [ -z ${OOPSJEDI_NO_UPDATE+x} ]; then
 
   # Deal with C++/Fortran interfaces
   cf_list=()
-  for file in `find $1/src_tmp/oopsjedi -name *.f`;do
+  for file in `find $1/src_tmp/oopsjedi -name *.f -o -name *.intfb.h`;do
     for sub in `grep -s "end subroutine c_" ${file} | awk '{print $3}' | cut -c 3-`;do
       cf_list+=("${sub}")
     done
