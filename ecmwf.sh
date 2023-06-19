@@ -41,6 +41,8 @@ if test ! -d $1/src; then
   cp -fr $1/src_tmp $1/src
 fi
 
+echo -e "-- Process OOPS-JEDI source files (might take some time...)"
+
 # Loop over source files
 for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.F90`; do
   # Change namespaces
@@ -60,9 +62,25 @@ for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.F90`; do
          ${file}
 done
 
+# Deal with C++/Fortran interfaces
+cf_list=()
+for file in `find $1/src_tmp/oopsjedi -type f`;do
+  for sub in `grep -s "end subroutine c_" ${file} | awk '{print $3}' | cut -c 3-`;do
+    cf_list+=("${sub}")
+  done
+  for func in `grep -s "end function c_" ${file} | awk '{print $3}' | cut -c 3-`;do
+    cf_list+=("${func}")
+  done
+done
+for file in `find $1/src_tmp/oopsjedi -type f`;do
+  for item in "${cf_list[@]}"; do
+     sed -i -e s/"c_"${item}/"cjedi_"${item}/g -e s/${item}"_f"/${item}"_fjedi"/g ${file}
+  done
+done
+
 # Copy modified files
 echo -e "-- Copy modified files (different from their src counterpart)"
-for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.F90`; do
+for file in `find $1/src_tmp -name *.h -o -name *.cc -o -name *.f -o -name *.F90`; do
   if ! cmp -s "${file}" "${file/src_tmp/src}"; then
     echo -e "--  + "${file}
     rm -f ${file/src_tmp/src}
