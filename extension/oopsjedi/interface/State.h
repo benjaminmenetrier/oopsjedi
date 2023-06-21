@@ -167,7 +167,7 @@ State<MODEL>::State(const Geometry_ & resol, const Variables & vars,
   eckit::LocalConfiguration modelConf;
   oops::Model<MODEL> model(resol.geometry(), modelConf);
   eckit::LocalConfiguration conf;
-  conf.set("variables", vars.variables());
+  conf.set("variables", vars.variablesMetaData().getString("variables"));
   conf.set("date", time.toString());
   state_.reset(new State_(resol.geometry(), model, conf));
   state_->validTime() = util::DateTime(time.toString());
