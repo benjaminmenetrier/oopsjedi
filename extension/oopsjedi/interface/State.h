@@ -163,15 +163,7 @@ State<MODEL>::State(const Geometry_ & resol, const Variables & vars,
 {
   Log::trace() << "State<MODEL>::State starting" << std::endl;
   utiljedi::Timer timer(classname(), "State");
-  // TODO(Benjamin M): how to use vars in model?
-  eckit::LocalConfiguration modelConf;
-  oops::Model<MODEL> model(resol.geometry(), modelConf);
-  eckit::LocalConfiguration conf;
-  conf.set("variables", vars.variablesMetaData().getString("variables"));
-  conf.set("date", time.toString());
-  state_.reset(new State_(resol.geometry(), model, conf));
-  state_->validTime() = util::DateTime(time.toString());
-//  this->setObjectSize(state_->serialSize()*sizeof(double));
+  ABORT("not implemented in oopsjedi");
   Log::trace() << "State<MODEL>::State done" << std::endl;
 }
 
