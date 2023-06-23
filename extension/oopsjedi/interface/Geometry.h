@@ -199,7 +199,7 @@ std::vector<size_t> Geometry<MODEL>::variableSizes(const Variables & vars) const
   Log::trace() << "Geometry<MODEL>::variableSizes starting" << std::endl;
   utiljedi::Timer timer(classname(), "variableSizes");
   eckit::LocalConfiguration varConf;
-  varConf.set("variables", vars.variables());
+  varConf.set("variables names", vars.variables());
   Variables_ oopsVars(varConf);
   std::vector<size_t> sizes = geom_->variableSizes(oopsVars.variables());
   Log::trace() << "Geometry<MODEL>::variableSizes done" << std::endl;
