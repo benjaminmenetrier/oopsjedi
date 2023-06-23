@@ -170,7 +170,7 @@ void LibOOPS::finalise(bool finaliseMPI) {
     // Destroy info channel last after other channels have flushed all output
     infoChannel_.reset(new eckit::Channel());
 
-    if (finaliseMPI) eckit::mpi::finaliseAllComms();
+//    if (finaliseMPI) eckit::mpi::finaliseAllComms();
 }
 
 const void* LibOOPS::addr() const {return this;}
