@@ -175,12 +175,12 @@ State<MODEL>::State(const Geometry_ & resol,
 {
   Log::trace() << "State<MODEL>::State read starting" << std::endl;
   utiljedi::Timer timer(classname(), "State");
-  eckit::LocalConfiguration modelConf;
+  eckit::LocalConfiguration modelConf(params.toConfiguration(), "model");
   oops::Model<MODEL> model(resol.geometry(), modelConf);
   state_.reset(new State_(
                  resol.geometry(),
                  model,
-                 params.toConfiguration()));
+                 params.toConfiguration().getSubConfiguration("state")));
 //  this->setObjectSize(state_->serialSize()*sizeof(double));
   Log::trace() << "State<MODEL>::State read done" << std::endl;
 }

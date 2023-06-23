@@ -216,7 +216,7 @@ Increment<MODEL>::Increment(const Geometry_ & resol, const Variables & vars,
   Log::trace() << "Increment<MODEL>::Increment starting" << std::endl;
   utiljedi::Timer timer(classname(), "Increment");
   eckit::LocalConfiguration varConf;
-  varConf.set("variables", vars.variablesMetaData().getString("variables"));
+  varConf.set("variables names", vars.variables());
   const oops::Variables<MODEL> oopsVars(varConf);
   const util::DateTime oopsTime(time.toString());
   increment_.reset(new Increment_(resol.geometry(), oopsVars, oopsTime));
