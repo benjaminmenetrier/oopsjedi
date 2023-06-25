@@ -189,7 +189,8 @@ std::vector<double> Geometry<MODEL>::verticalCoord(std::string & str) const {
   Log::trace() << "Geometry<MODEL>::verticalCoord starting" << std::endl;
   utiljedi::Timer timer(classname(), "verticalCoord");
   Log::trace() << "Geometry<MODEL>::verticalCoord done" << std::endl;
-  return geom_->verticalCoord(str);
+  ABORT("not implemented in oopsjedi");
+//  return geom_->verticalCoord(str);
 }
 
 // -----------------------------------------------------------------------------
