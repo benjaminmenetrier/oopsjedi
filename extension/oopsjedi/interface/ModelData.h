@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <type_traits>
 
 #include "oopsjedi/util/Logger.h"
 #include "oopsjedi/util/ObjectCounter.h"
@@ -41,8 +42,6 @@ class ModelData : public  utiljedi::Printable,
 
  private:
   void print(std::ostream &) const override;
-
-//  std::unique_ptr<ModelData_> modeldata_;  // pointer to the ModelData implementation
 };
 
 // -----------------------------------------------------------------------------
@@ -52,7 +51,6 @@ ModelData<MODEL>::ModelData(const Geometry_ & geometry)
 {
   Log::trace() << "ModelData<MODEL>::ModelData starting" << std::endl;
   utiljedi::Timer timer(classname(), "ModelData");
-//  modeldata_.reset(new ModelData_(geometry.geometry()));
   Log::trace() << "ModelData<MODEL>::ModelData done" << std::endl;
 }
 
@@ -62,7 +60,6 @@ template<typename MODEL>
 ModelData<MODEL>::~ModelData() {
   Log::trace() << "ModelData<MODEL>::~ModelData starting" << std::endl;
   utiljedi::Timer timer(classname(), "~ModelData");
-//  modeldata_.reset();
   Log::trace() << "ModelData<MODEL>::~ModelData done" << std::endl;
 }
 
@@ -73,8 +70,10 @@ const eckit::LocalConfiguration ModelData<MODEL>::modelData() const {
   Log::trace() << "ModelData<MODEL>::modelData starting" << std::endl;
   utiljedi::Timer timer(classname(), "modelData");
   Log::trace() << "ModelData<MODEL>::modelData done" << std::endl;
-//  return modeldata_->modelData();
-  return eckit::LocalConfiguration();
+  eckit::LocalConfiguration config;
+  // For quench
+  config.set("epsilon", 0.621957535);
+  return config;
 }
 
 // -----------------------------------------------------------------------------
@@ -83,7 +82,6 @@ template<typename MODEL>
 void ModelData<MODEL>::print(std::ostream & os) const {
   Log::trace() << "ModelData<MODEL>::print starting" << std::endl;
   utiljedi::Timer timer(classname(), "print");
-//  os << *modeldata_;
   Log::trace() << "ModelData<MODEL>::print done" << std::endl;
 }
 
