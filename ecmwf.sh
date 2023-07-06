@@ -4,8 +4,8 @@ if [ -z ${OOPSJEDI_NO_UPDATE+x} ]; then
   # Remember path
   PWD_INIT=${PWD}
 
-  # Update or clone OOPS-JEDI repo
-  GIT_BRANCH=feature/use_oops_ecmwf
+  # Update or clone OOPS-JEDI repo (TODO: should be develop when modifs are merged)
+  GIT_BRANCH=feature/saber_for_ecmwf+task_with_no_point
   echo -e "-- Clone OOPS-JEDI repository, branch ${GIT_BRANCH}"
   if test -d $1/oops-jcsda; then
     cd $1/oops-jcsda
